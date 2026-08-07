@@ -5,161 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Portal Guru SMK Jetis - Direct Database Tools</title>
     
-    <!-- 1. Firebase SDK CDN (Compat Version) -->
+    <!-- Panggil CSS Terpusat -->
+    <link rel="stylesheet" href="style/style.css">
+    
+    <!-- Firebase SDK CDN -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
-    <!-- 2. Terintegrasi dengan Konfigurasi Terpusat auth.js -->
-    <script src="auth.js"></script>
-
-    <style>
-        :root {
-            --bg-color: #0d0e15;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.15);
-            --neon-cyan: #00f2fe;
-            --neon-pink: #ff0844;
-            --neon-purple: #7f00ff;
-            --neon-green: #00ff87;
-            --text-main: #ffffff;
-            --text-sub: #b0b3c6;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 24px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 24px;
-            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .nav-links a {
-            color: var(--text-sub);
-            text-decoration: none;
-            margin-left: 16px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .nav-links a.active, .nav-links a:hover {
-            color: var(--neon-cyan);
-            border-color: var(--neon-cyan);
-            background: var(--card-bg);
-        }
-
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        select, input, textarea {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--card-border);
-            color: #fff;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            width: 100%;
-            box-sizing: border-box;
-            margin-bottom: 12px;
-        }
-
-        select:focus, input:focus, textarea:focus {
-            border-color: var(--neon-cyan);
-        }
-
-        textarea {
-            font-family: monospace;
-            font-size: 12px;
-            height: 180px;
-            resize: vertical;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-cyan));
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        button.btn-green {
-            background: linear-gradient(45deg, #11998e, #38ef7d);
-            color: #000;
-        }
-
-        button.btn-danger {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-        }
-
-        .console-output {
-            background: #000;
-            border: 1px solid var(--neon-cyan);
-            border-radius: 8px;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 12px;
-            color: var(--neon-green);
-            max-height: 300px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-        }
-    </style>
+    <!-- Panggil JS Auth Terpusat -->
+    <script src="auth/auth.js"></script>
 </head>
 <body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
     <div class="container">
-        <header>
+        <header class="nav-header">
             <h1>Portal Guru - Database Direct Tools</h1>
             <nav class="nav-links">
-                <a href="admin.html">Data Guru & Device</a>
+                <a href="device.html">Data Guru & Device</a>
                 <a href="link.html">Dashboard Links</a>
                 <a href="database.html" class="active">Database Direct</a>
             </nav>
@@ -169,7 +34,7 @@
             <!-- Panel Backup & Export -->
             <div class="glass-card">
                 <h3>Export / Backup JSON</h3>
-                <p style="font-size: 13px; color: var(--text-sub);">Unduh seluruh data dari Firestore ke dalam berkas format `.json` untuk kebutuhan cadangan data.</p>
+                <p style="font-size: 13px; color: var(--text-sub);">Unduh seluruh data dari Firestore ke dalam berkas format <code>.json</code> untuk kebutuhan cadangan data.</p>
                 
                 <label style="font-size: 12px; color: var(--text-sub);">Pilih Koleksi:</label>
                 <select id="exportCollectionSelect">
@@ -185,7 +50,7 @@
             <!-- Panel Restore & Import -->
             <div class="glass-card">
                 <h3>Import / Restore JSON</h3>
-                <p style="font-size: 13px; color: var(--text-sub);">Unggah atau tempelkan skema data JSON untuk melakukan penyuntikan data massal (*batch write*).</p>
+                <p style="font-size: 13px; color: var(--text-sub);">Unggah atau tempelkan skema data JSON untuk melakukan penyuntikan data massal (<i>batch write</i>).</p>
                 
                 <label style="font-size: 12px; color: var(--text-sub);">Pilih Koleksi Target:</label>
                 <select id="importCollectionSelect">
@@ -203,8 +68,8 @@
         <!-- Panel Direct Raw Document Editor -->
         <div class="glass-card">
             <h3>Direct Document Inspector & Editor</h3>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="directDocPath" placeholder="Masukan Koleksi/ID_Dokumen (misal: teachers/198109092026001)">
+            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <input type="text" id="directDocPath" placeholder="Masukan Koleksi/ID_Dokumen (misal: teachers/198109092026001)" style="margin-bottom: 0;">
                 <button type="button" onclick="fetchSingleDocument()" style="white-space: nowrap;">Cek Dokumen</button>
             </div>
 
@@ -223,8 +88,11 @@
         </div>
     </div>
 
+    <footer>
+        &copy; 2026 SMK Negeri 1 Jetis Mojokerto &bull; Developed for Portal Guru Android System
+    </footer>
+
     <script>
-        // Menggunakan instance 'db' dari auth.js
         const logBox = document.getElementById('consoleLog');
 
         function printLog(message, isError = false) {
@@ -253,7 +121,6 @@
                     exportData[target] = snap.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
                 }
 
-                // Download File JSON
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
                 const downloadAnchor = document.createElement('a');
                 downloadAnchor.setAttribute("href", dataStr);
@@ -262,7 +129,7 @@
                 downloadAnchor.click();
                 downloadAnchor.remove();
 
-                printLog(`Ekspor data (${target}) berhasil Diunduh!`);
+                printLog(`Ekspor data (${target}) berhasil diunduh!`);
             } catch (err) {
                 printLog(`Gagal melakukan ekspor: ${err.message}`, true);
             }
@@ -288,9 +155,8 @@
                 const batch = db.batch();
 
                 items.forEach(item => {
-                    // Jika ada _id atau nip / id, gunakan sebagai Document ID
                     const docId = item._id || item.nip || item.id || db.collection(collectionName).doc().id;
-                    delete item._id; // Bersihkan field temporary _id jika ada
+                    delete item._id;
 
                     const docRef = db.collection(collectionName).doc(docId);
                     batch.set(docRef, item, { merge: true });
@@ -304,7 +170,7 @@
             }
         }
 
-        // 3. Inspection - Read Single Document
+        // 3. Read Single Document
         async function fetchSingleDocument() {
             const path = document.getElementById('directDocPath').value.trim();
             if (!path || !path.includes('/')) {
