@@ -1,5 +1,5 @@
 // ===================================================
-// KONFIGURASI PUSAT FIREBASE WEB SDK & AUTH SECURITY
+// KONFIGURASI PUSAT FIREBASE WEB SDK & AUTHENTICATION
 // Portal Guru SMK Jetis
 // ===================================================
 
@@ -18,34 +18,25 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-// Inisialisasi Firestore Service
 const db = firebase.firestore();
+const auth = firebase.auth();
 
-// ===================================================
-// PROTEKSI HALAMAN ADMIN (PIN / PASSWORD SESSION)
-// ===================================================
-const ADMIN_PIN = "123456"; // <-- GANTI PASSWORD ADMIN ANDA DI SINI
-
-function checkAdminAuth() {
-    const isAuth = sessionStorage.getItem("admin_authenticated");
-    if (isAuth !== "true") {
-        const inputPin = prompt("Masukkan PIN/Password Admin Portal Guru:");
-        if (inputPin === ADMIN_PIN) {
-            sessionStorage.setItem("admin_authenticated", "true");
-            alert("Akses Admin Diterima.");
-        } else {
-            alert("PIN Salah! Akses ditolak.");
-            window.location.href = "about:blank"; // Atau keluarkan dari halaman
-            throw new Error("Unauthorized Access");
-        }
+// Proteksi Sesi Halaman Admin
+auth.onAuthStateChanged((user) => {
+    const isLoginPage = window.location.pathname.endsWith('login.html');
+    
+    if (!user && !isLoginPage) {
+        // Jika belum login dan mencoba buka index.html / admin.html / dll
+        window.location.href = "login.html";
+    } else if (user && isLoginPage) {
+        // Jika sudah login tapi buka halaman login.html
+        window.location.href = "index.html";
     }
-}
+});
 
 function logoutAdmin() {
-    sessionStorage.removeItem("admin_authenticated");
-    alert("Berhasil Keluar.");
-    window.location.reload();
+    auth.signOut().then(() => {
+        alert("Berhasil keluar.");
+        window.location.href = "login.html";
+    });
 }
-
-// Jalankan proteksi otomatis saat file di-load
-checkAdminAuth();
