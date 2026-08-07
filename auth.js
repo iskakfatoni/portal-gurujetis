@@ -1,11 +1,8 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// ===================================================
+// KONFIGURASI PUSAT FIREBASE WEB SDK & AUTH SECURITY
+// Portal Guru SMK Jetis
+// ===================================================
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAR_9SDtOM-SGjQywqd-oXmajgroAhFBfw",
   authDomain: "portal-guru-jetis-36d41.firebaseapp.com",
@@ -16,6 +13,39 @@ const firebaseConfig = {
   measurementId: "G-K0DED36NSS"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Inisialisasi Firebase App
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+// Inisialisasi Firestore Service
+const db = firebase.firestore();
+
+// ===================================================
+// PROTEKSI HALAMAN ADMIN (PIN / PASSWORD SESSION)
+// ===================================================
+const ADMIN_PIN = "123456"; // <-- GANTI PASSWORD ADMIN ANDA DI SINI
+
+function checkAdminAuth() {
+    const isAuth = sessionStorage.getItem("admin_authenticated");
+    if (isAuth !== "true") {
+        const inputPin = prompt("Masukkan PIN/Password Admin Portal Guru:");
+        if (inputPin === ADMIN_PIN) {
+            sessionStorage.setItem("admin_authenticated", "true");
+            alert("Akses Admin Diterima.");
+        } else {
+            alert("PIN Salah! Akses ditolak.");
+            window.location.href = "about:blank"; // Atau keluarkan dari halaman
+            throw new Error("Unauthorized Access");
+        }
+    }
+}
+
+function logoutAdmin() {
+    sessionStorage.removeItem("admin_authenticated");
+    alert("Berhasil Keluar.");
+    window.location.reload();
+}
+
+// Jalankan proteksi otomatis saat file di-load
+checkAdminAuth();
