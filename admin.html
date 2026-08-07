@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal Guru SMK Jetis - Device & Accounts</title>
+    <title>Portal Guru SMK Jetis - Admin Control Center</title>
     
-    <!-- 1. Firebase SDK CDN (Compat Version) -->
+    <!-- 1. Firebase SDK CDN -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
-    <!-- 2. Terintegrasi dengan Konfigurasi Terpusat auth.js -->
+    <!-- 2. Terintegrasi dengan Terpusat auth.js (Memicu Proteksi PIN) -->
     <script src="auth.js"></script>
 
     <style>
@@ -30,312 +30,207 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 24px;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .orb-1 { width: 300px; height: 300px; background: rgba(127, 0, 255, 0.3); top: -50px; left: -50px; }
+        .orb-2 { width: 250px; height: 250px; background: rgba(0, 242, 254, 0.25); bottom: 100px; right: -50px; }
 
         .container {
             max-width: 1100px;
             margin: 0 auto;
+            padding: 40px 24px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--card-border);
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .badge-school {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 20px;
+            color: var(--neon-cyan);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
         }
 
         h1 {
-            margin: 0;
-            font-size: 24px;
+            font-size: 32px;
+            margin: 0 0 8px 0;
             background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .nav-links a {
+        p.subtitle {
             color: var(--text-sub);
-            text-decoration: none;
-            margin-left: 16px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid transparent;
-            transition: all 0.3s;
+            font-size: 15px;
+            margin: 0;
         }
 
-        .nav-links a.active, .nav-links a:hover {
-            color: var(--neon-cyan);
-            border-color: var(--neon-cyan);
-            background: var(--card-bg);
+        .btn-logout {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(255, 8, 68, 0.2);
+            border: 1px solid var(--neon-pink);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
         }
 
         .glass-card {
             background: var(--card-bg);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 28px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.2);
+        }
+
+        .card-icon { font-size: 36px; margin-bottom: 16px; }
+        .card-title { font-size: 20px; font-weight: bold; margin-bottom: 8px; color: #fff; }
+        .card-desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-bottom: 20px; }
+        .card-action { font-size: 14px; font-weight: 600; color: var(--neon-cyan); }
+
+        .status-card {
+            background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .form-group {
             display: flex;
-            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
             flex-wrap: wrap;
-            margin-bottom: 16px;
+            gap: 16px;
         }
 
-        input {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--card-border);
-            color: #fff;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            flex: 1;
-            min-width: 180px;
-        }
+        .status-dot { width: 12px; height: 12px; border-radius: 50%; background: #ff0844; }
+        .status-dot.online { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
 
-        input:focus {
-            border-color: var(--neon-cyan);
-        }
-
-        button {
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-cyan));
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        button.btn-danger {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-        }
-
-        button.btn-warning {
-            background: linear-gradient(45deg, #f7971e, #ffd200);
-            color: #000;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-        }
-
-        th, td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            font-size: 14px;
-        }
-
-        th {
+        footer {
+            text-align: center;
+            padding: 20px;
             color: var(--text-sub);
-            font-weight: 600;
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .status-active {
-            background: rgba(0, 255, 135, 0.15);
-            color: var(--neon-green);
-            border: 1px solid var(--neon-green);
-        }
-
-        .status-inactive {
-            background: rgba(255, 8, 68, 0.15);
-            color: var(--neon-pink);
-            border: 1px solid var(--neon-pink);
-        }
-
-        .device-id {
-            font-family: monospace;
-            font-size: 12px;
-            color: var(--neon-cyan);
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
 <body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
     <div class="container">
         <header>
-            <h1>Portal Guru - Admin Dashboard</h1>
-            <nav class="nav-links">
-                <a href="admin.html" class="active">Data Guru & Device</a>
-                <a href="link.html">Dashboard Links</a>
-                <a href="database.html">Database Direct</a>
-            </nav>
+            <button class="btn-logout" onclick="logoutAdmin()">Keluar / Lock</button>
+            <span class="badge-school">SMK NEGERI 1 JETIS MOJOKERTO</span>
+            <h1>Portal Guru - Web Control Center</h1>
+            <p class="subtitle">Pusat Manajemen Akun Guru, Penambatan Perangkat, dan Layanan Dashboard</p>
         </header>
 
-        <!-- Form Tambah/Update Guru -->
-        <div class="glass-card">
-            <h3>Tambah / Update Data Guru</h3>
-            <form id="teacherForm" class="form-group">
-                <input type="text" id="nipInput" placeholder="NIP Guru" required>
-                <input type="text" id="nameInput" placeholder="Nama Lengkap Guru (misal: Budi, S.Pd., Gr.)" required>
-                <button type="submit">Simpan Data Guru</button>
-            </form>
+        <div class="menu-grid">
+            <a href="admin.html" class="glass-card">
+                <div>
+                    <div class="card-icon">👨‍🏫</div>
+                    <div class="card-title">Data Guru & Device</div>
+                    <div class="card-desc">Kelola daftar NIP guru, aktivasi akun, dan reset device ID jika guru berganti HP.</div>
+                </div>
+                <div class="card-action">Buka Kelola Guru &rarr;</div>
+            </a>
+
+            <a href="link.html" class="glass-card">
+                <div>
+                    <div class="card-icon">🔗</div>
+                    <div class="card-title">Dashboard Links</div>
+                    <div class="card-desc">Atur tautan aplikasi sekolah (E-Rapor, Presensi) dan urutan tampil di aplikasi Android.</div>
+                </div>
+                <div class="card-action">Buka Kelola Link &rarr;</div>
+            </a>
+
+            <a href="database.html" class="glass-card">
+                <div>
+                    <div class="card-icon">💾</div>
+                    <div class="card-title">Database Direct Tools</div>
+                    <div class="card-desc">Fasilitas backup/export JSON, restore/import massal, dan edit dokumen Firestore.</div>
+                </div>
+                <div class="card-action">Buka Database Tools &rarr;</div>
+            </a>
         </div>
 
-        <!-- Tabel Data Guru -->
-        <div class="glass-card">
-            <h3>Daftar Guru & Penambatan Perangkat (Device Binding)</h3>
-            <input type="text" id="searchInput" placeholder="Cari berdasarkan NIP atau Nama Guru..." style="width: 100%; margin-bottom: 16px; box-sizing: border-box;">
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>NIP</th>
-                        <th>Nama Guru</th>
-                        <th>Bound Device ID</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="teacherTableBody">
-                    <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-sub);">Memuat data dari Firestore...</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="status-card">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div id="statusDot" class="status-dot"></div>
+                <div>
+                    <strong style="font-size: 14px;">Status Koneksi Firebase:</strong>
+                    <div id="statusText" style="font-size: 12px; color: var(--text-sub);">Menghubungkan...</div>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: var(--neon-cyan); font-family: monospace;">
+                Project ID: portal-guru-jetis-36d41
+            </div>
         </div>
     </div>
 
+    <footer>
+        &copy; 2026 SMK Negeri 1 Jetis Mojokerto &bull; Developed for Portal Guru Android System
+    </footer>
+
     <script>
-        // Memakai instance 'db' yang sudah diinisialisasi oleh auth.js
-        const teacherForm = document.getElementById('teacherForm');
-        const teacherTableBody = document.getElementById('teacherTableBody');
-        const searchInput = document.getElementById('searchInput');
+        // Verifikasi Uji Koneksi Realtime ke Firebase Firestore
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
 
-        let teacherDataCache = [];
-
-        // 1. Fetch & Realtime Listener Koleksi Teachers
-        db.collection('teachers').onSnapshot(snapshot => {
-            teacherDataCache = [];
-            snapshot.forEach(doc => {
-                teacherDataCache.push({ nip: doc.id, ...doc.data() });
+        db.collection('teachers').limit(1).get()
+            .then(() => {
+                statusDot.classList.add('online');
+                statusText.innerText = "Terhubung dan Aktif (Cloud Firestore)";
+                statusText.style.color = "var(--neon-green)";
+            })
+            .catch(err => {
+                statusText.innerText = "Gagal terhubung: " + err.message;
+                statusText.style.color = "var(--neon-pink)";
             });
-            renderTable(teacherDataCache);
-        }, error => {
-            console.error("Error fetching teachers: ", error);
-            teacherTableBody.innerHTML = `<tr><td colspan="5" style="color: #ff0844; text-align: center;">Gagal memuat data: ${error.message}</td></tr>`;
-        });
-
-        // 2. Render Tabel Data
-        function renderTable(data) {
-            teacherTableBody.innerHTML = '';
-            if (data.length === 0) {
-                teacherTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-sub);">Tidak ada data guru ditemukan.</td></tr>`;
-                return;
-            }
-
-            data.forEach(teacher => {
-                const tr = document.createElement('tr');
-                const hasDevice = teacher.device_id && teacher.device_id.trim() !== '';
-
-                tr.innerHTML = `
-                    <td><strong>${teacher.nip}</strong></td>
-                    <td>${teacher.name}</td>
-                    <td>${hasDevice ? `<span class="device-id">${teacher.device_id}</span>` : '<em style="color:#666;">Belum Terikat</em>'}</td>
-                    <td>
-                        <span class="status-badge ${teacher.is_active ? 'status-active' : 'status-inactive'}">
-                            ${teacher.is_active ? 'Aktif' : 'Non-Aktif'}
-                        </span>
-                    </td>
-                    <td>
-                        ${hasDevice ? `<button class="btn-warning" onclick="unbindDevice('${teacher.nip}', '${teacher.device_id}')">Reset HP (Unbind)</button>` : ''}
-                        <button class="${teacher.is_active ? 'btn-danger' : ''}" onclick="toggleStatus('${teacher.nip}', ${teacher.is_active})">
-                            ${teacher.is_active ? 'Nonaktifkan' : 'Aktifkan'}
-                        </button>
-                    </td>
-                `;
-                teacherTableBody.appendChild(tr);
-            });
-        }
-
-        // 3. Tambah / Edit Data Guru
-        teacherForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nip = document.getElementById('nipInput').value.trim();
-            const name = document.getElementById('nameInput').value.trim();
-
-            if (!nip || !name) return;
-
-            try {
-                await db.collection('teachers').doc(nip).set({
-                    nip: nip,
-                    name: name,
-                    device_id: "",
-                    is_active: true,
-                    created_at: Date.now(),
-                    last_login: Date.now()
-                }, { merge: true });
-
-                alert(`Data guru ${name} (${nip}) berhasil disimpan!`);
-                teacherForm.reset();
-            } catch (err) {
-                alert("Gagal menyimpan data guru: " + err.message);
-            }
-        });
-
-        // 4. Reset Binding HP (Solusi untuk kasus "NIP terikat di HP lain")
-        async function unbindDevice(nip, deviceId) {
-            if (!confirm(`Apakah Anda yakin ingin melepas penambatan HP dari NIP ${nip}? Guru tersebut akan dapat menautkan HP baru saat login berikutnya.`)) return;
-
-            try {
-                const batch = db.batch();
-                
-                // Unbind field device_id di dokumen guru
-                const teacherRef = db.collection('teachers').doc(nip);
-                batch.update(teacherRef, { device_id: "" });
-
-                // Hapus record di koleksi devices
-                if (deviceId) {
-                    const deviceRef = db.collection('devices').doc(deviceId);
-                    batch.delete(deviceRef);
-                }
-
-                await batch.commit();
-                alert(`HP berhasil dilepas dari NIP ${nip}!`);
-            } catch (err) {
-                alert("Gagal mereset HP: " + err.message);
-            }
-        }
-
-        // 5. Ubah Status Aktif / Non-Aktif
-        async function toggleStatus(nip, currentStatus) {
-            try {
-                await db.collection('teachers').doc(nip).update({
-                    is_active: !currentStatus
-                });
-            } catch (err) {
-                alert("Gagal mengubah status: " + err.message);
-            }
-        }
-
-        // 6. Pencarian / Filter
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = teacherDataCache.filter(t => 
-                t.nip.toLowerCase().includes(query) || t.name.toLowerCase().includes(query)
-            );
-            renderTable(filtered);
-        });
     </script>
 </body>
 </html>
